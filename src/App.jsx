@@ -59,7 +59,6 @@ const App = () => {
 
   return (
     <> {/* Fragmento para evitar un div extra */}
-      <h1> Test de frontend </h1>
       <div
         className="grid"
         onMouseDown={() => setPintado(true)}

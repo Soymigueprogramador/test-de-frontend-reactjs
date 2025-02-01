@@ -1,3 +1,8 @@
+/*
+  Dejo el reseteo de la pagina para evitar incompatibilidad con algunos navegadores.
+  Dejo seteado un color de fondo en el body.
+*/
+
 * {
   box-sizing: border-box;
   padding: 0;
@@ -6,9 +11,4 @@
 
 body {
   background-color: black;
-}
-
-h1{
-  text-align: center;
-  color: #fff;
 }
