@@ -3,55 +3,54 @@ import { useState, useEffect } from 'react'; // HOOKS: Son funciones que ya vien
 import './grid.css'; // Acá se guardan los estilos usados para la grilla.
 
 const App = () => {
-  // El hook useState nos permite crear estados en React.js
+  // Estados
   const [filas, setFilas] = useState(0);
   const [grid, setGrid] = useState([]);
   const [pintado, setPintado] = useState(null);
-  const [elegirColor, setElegirColor] = useState(false);
   const [menuVisible, setMenuVisible] = useState(false);
   const [menuCerrado, setMenuCerrado] = useState({ x: 0, y: 0 });
 
   // Constante para indicar la cantidad de columnas.
   const columnas = 100;
 
-  // El hook useEffect nos permite manipular los estados y componentes en segundo plano.
+  // Hook para calcular las filas dinámicamente según el tamaño de la ventana
   useEffect(() => {
-    // Función para calcular las filas.
     const calcularFilas = () => {
       const alturaFilas = 10;
       setFilas(Math.floor(window.innerHeight / alturaFilas));
     };
 
-    calcularFilas(); // Llamando a la función que calcula las filas.
+    calcularFilas(); 
     window.addEventListener('resize', calcularFilas);
     return () => window.removeEventListener('resize', calcularFilas);
-  }, []); // Array de dependencias []
+  }, []);
 
+  // Crear la grilla con los colores iniciales (blanco)
   useEffect(() => {
     setGrid(new Array(filas * columnas).fill('white'));
   }, [filas]);
 
-  // Función para cambiar el color.
+  // Función para cambiar el color de una celda
   const cambiarColor = (i) => {
     setGrid((prev) => {
-      const nuevaGrid = [...prev]; // Usamos los "..." para extender el alcance de un array.
+      const nuevaGrid = [...prev];
       nuevaGrid[i] = nuevaGrid[i] === 'white' ? pintado : 'white';
       return nuevaGrid;
     });
   };
 
-  // Función para seleccionar un color.
+  // Función para seleccionar un color
   const seleccionarColor = (color) => {
     setPintado(color);
     setMenuVisible(false);
   };
 
-  // Función para controlar el evento del mouse cuando este entra en la grilla.
+  // Función para cambiar el color al pasar el mouse
   const mouseOver = (index) => {
     if (pintado) cambiarColor(index);
   };
 
-  // Función para controlar el evento del mouse cuando se detecta un clic derecho.
+  // Función para manejar el clic derecho (abrir menú de colores)
   const clickDerecho = (e, index) => {
     e.preventDefault();
     setMenuCerrado({ x: e.clientX, y: e.clientY });
@@ -59,26 +58,42 @@ const App = () => {
   };
 
   return (
-    <> {/* Los fragment abreviados <></> se usan como alternativa al div. */}
-    
+    <> {/* Fragmento para evitar un div extra */}
+      <h1> Test de frontend </h1>
       <div
-        className='grid'
+        className="grid"
         onMouseDown={() => setPintado(true)}
-        onMouseUp={() setPintado(false)}
+        onMouseUp={() => setPintado(false)}
       >
-        {
-          grid,math((color, index) => {
-            <div
-              key={index}
-              className='celdas'
-              style={{ backgroundColor: color }}
-              onClick={() => cambiarColor(index)}
-            >
-
-          })
-        }
+        {grid.map((color, index) => (
+          <div
+            key={index}
+            className="celda"
+            style={{ backgroundColor: color }}
+            onClick={() => cambiarColor(index)}
+            onMouseOver={() => mouseOver(index)}
+            onContextMenu={(e) => clickDerecho(e, index)}
+          ></div>
+        ))}
       </div>
 
+      {/* Menú de selección de color */}
+      {menuVisible && (
+        <div
+          className="menu-color"
+          style={{ top: menuCerrado.y, left: menuCerrado.x }}
+          onMouseLeave={() => setMenuVisible(false)}
+        >
+          {["red", "blue", "green", "yellow", "black"].map((color) => (
+            <div
+              key={color}
+              className="opcion-color"
+              style={{ backgroundColor: color }}
+              onClick={() => seleccionarColor(color)}
+            ></div>
+          ))}
+        </div>
+      )}
     </>
   );
 };
